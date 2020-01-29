@@ -72,4 +72,16 @@ INNER JOIN jockey AS j ON r.id_jockey = j.id
 GROUP BY r.id_jockey, r.id_poney
 HAVING COUNT(r.id_poney) >= 2;
 
- 
+/*
+ * 8- Afficher les courses (courses.id, jokey(nom, prenom), poney.name) de plus de 4 participants en classant les données par course, puis par jockey, puis par poney
+ */
+SELECT r1.id_course, j.nom, j.prenom, p.nom
+FROM jockeyponeycourse AS r1
+INNER JOIN jockey AS j ON r1.id_jockey = j.id
+INNER JOIN poney AS p ON r1.id_poney = p.id 
+WHERE r1.id_course IN (
+    SELECT r.id_course
+    FROM jockeyponeycourse AS r
+    GROUP BY r.id_course
+    HAVING COUNT(r.id_course) > 4 )
+ORDER BY r1.id_course, r1.id_jockey, r1.id_poney;
