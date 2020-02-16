@@ -29,18 +29,43 @@ FROM
 SELECT  SUM(CA) CA
 FROM
     ( 
-        select coalesce(sum(leasing_room.price), 0) CA from leasing_room
+        select coalesce(sum(leasing_room.price), 0) CA 
+        from leasing_room
         where leasing_room.start_at BETWEEN '2015-10-02' AND '2015-12-10'
         UNION ALL
-        select coalesce(sum(leasing_building.price), 0) CA from leasing_building
+        select coalesce(sum(leasing_building.price), 0) CA 
+        from leasing_building
         where leasing_building.start_at BETWEEN '2015-10-02' AND '2015-12-10'
     ) s
 
 -- Voir le chiffre d'affaire pour les soirée à thèmes entre deux dates
+SELECT  SUM(CA) CA
+FROM
+    ( 
+        select coalesce(sum(leasing_room.price), 0) CA 
+        from leasing_room
+        inner join room_theme_room on leasing_room.id_room = room_theme_room.id_room
+        where room_theme_room.id_room IN (
+			select room_theme_room.id_room
+            from room_theme_room
+        )
+        And leasing_room.start_at BETWEEN '2015-10-02' AND '2015-12-10'
+    ) s
 
 -- Voir l'état des finances de la discothèque pour une année fiscale (la différence de tout se qu'il y a à payer et les revenu)
 
 -- Voir la consommation moyenne de l'ensemble des client
+select AVG(CA) CA
+FROM
+    ( 
+        select coalesce(sum(leasing_room.price), 0) CA
+        from leasing_room
+        inner join customer on leasing_room.id_customer = customer.id
+        UNION ALL
+        select coalesce(sum(leasing_building.price), 0) CA
+        from leasing_building
+        inner join customer on leasing_building.id_customer = customer.id
+    ) s
 
 -- Voir la consommation moyenne de l'ensemble des client avec l'entré
 
